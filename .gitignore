@@ -1,0 +1,6 @@
+.idea/
+
+*.pyc
+
+dist
+django_instagram_profile.egg-info

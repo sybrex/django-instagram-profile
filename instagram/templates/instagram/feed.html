@@ -1,0 +1,20 @@
+{% if feed %}
+    {% for post in feed %}
+    <div class="post">
+        <p class="post-date">
+            <a href="{{ post.permalink }}" target="_blank">{{ post.created|date:'Y-m-d H:i:s' }}</a>
+        </p>
+        <p>{{ post.caption }}</p>
+        <p><img src="{{ MEDIA_URL }}instagram/{{ post.thumbnail }}" alt="" title=""></p>
+        {% if post.children %}
+        {% for item in post.children_list %}
+            <p><img src="{{ MEDIA_URL }}instagram/{{ item }}" alt="" title=""></p>
+        {% endfor %}
+        {% endif %}
+    </div>
+    {% endfor %}
+{% else %}
+    <p>Unfortunately we couldn't get anything</p>
+    <p>Please try again later</p>
+{% endif %}
+
