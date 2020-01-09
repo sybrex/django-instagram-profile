@@ -6,6 +6,10 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
+django = "*"
+requests = "*"
+pillow = "*"
+configparser = "*"
 
 [requires]
 python_version = "3.6"
