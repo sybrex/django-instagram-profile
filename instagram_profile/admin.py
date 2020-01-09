@@ -25,7 +25,7 @@ class PostAdmin(admin.ModelAdmin):
             result = sync_instagram(code)
             status = messages.SUCCESS if result['status'] else messages.ERROR
             messages.add_message(request, status, result['message'])
-            return HttpResponseRedirect(reverse('admin:app_list', kwargs={'app_label': 'instagram'}) + 'post')
+            return HttpResponseRedirect(reverse('admin:app_list', kwargs={'app_label': 'instagram_profile'}) + 'post')
         else:
             query = {
                 'app_id': settings.INSTAGRAM_APP_ID,

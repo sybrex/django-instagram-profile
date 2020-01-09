@@ -1,3 +1,3 @@
 include LICENSE
 include README.rst
-recursive-include instagram/templates *
+recursive-include instagram_profile/templates *

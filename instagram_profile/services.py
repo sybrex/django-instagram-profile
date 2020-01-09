@@ -28,6 +28,9 @@ def sync_instagram(auth_code):
     for post in posts:
         if created is None or post['created'] > created:
             thumbnail = download_image(post['thumbnail'], post['media_id'])
+            if not thumbnail:
+                continue
+
             resize_image(thumbnail)
 
             children = []
