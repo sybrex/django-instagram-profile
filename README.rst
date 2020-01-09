@@ -1,7 +1,7 @@
 django-instagram-profile
 ========================
-A Django application that allows to fetch individual Instagram user profile media data save into database.
-Instagram media is managed using Django admin console
+A Django application that allows to fetch individual Instagram user profile media data and save into database.
+Instagram media is managed using Django admin console. [Demo](https://viktors.info/logbook)
 
 Requirements
 ------------
