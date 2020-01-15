@@ -3,6 +3,8 @@ django-instagram-profile
 A Django application that allows to fetch individual Instagram user profile media data and save into database.
 Instagram media is managed using Django admin console. [Demo](https://viktors.info/logbook)
 
+![Example](/docs/django-instagram-profile.png)
+
 Instagram profile
 ----------------------
 First you need to configure Instagram application following these instructions:
@@ -61,9 +63,11 @@ MEDIA_URL = '/media/'
 ```
 
 Add media template context processor in the settings.py
+Also add template dir to the list of dirs
 ```python
 TEMPLATES = [
     {
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.media', # add this line
