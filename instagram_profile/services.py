@@ -11,8 +11,6 @@ from requests.exceptions import HTTPError
 def sync_instagram(auth_code):
     try:
         posts = client.get_media_feed(auth_code)
-        if not posts:
-            return
     except HTTPError as http_err:
         return {
             'status': False,

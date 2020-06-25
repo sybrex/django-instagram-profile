@@ -8,7 +8,7 @@ from . import settings
 def get_media_feed(auth_code):
     access_token = get_access_token(auth_code)
     if not access_token:
-        return []
+        raise Exception('Invalid authentication code')
 
     posts = []
     url = settings.INSTAGRAM_MEDIA_URL + '/me/media'
