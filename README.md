@@ -99,4 +99,4 @@ Releases
 --------
 * 0.1.0 Alpha version
 * 0.1.1 Handling invalid auth code exception
-* 0.1.2 Use text field for instagram captions 
+* 0.1.3 Use text field for instagram captions 

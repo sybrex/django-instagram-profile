@@ -19,7 +19,7 @@ class Post(models.Model):
     media_id = models.CharField(max_length=100)
     type = models.CharField(max_length=20, choices=MEDIA_TYPES, default=TYPE_IMAGE)
     permalink = models.CharField(max_length=256)
-    caption = models.CharField(max_length=100, default='')
+    caption = models.TextField(default='')
     thumbnail = models.CharField(max_length=256, default='')
     children = models.TextField(default='')
     created = models.DateTimeField()
