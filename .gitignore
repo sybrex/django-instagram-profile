@@ -1,6 +1,8 @@
 .idea/
+.venv/
 
 *.pyc
 
 dist
+build
 django_instagram_profile.egg-info
