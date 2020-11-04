@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path, reverse
+from django.urls import reverse, re_path
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from urllib.parse import urlencode
@@ -15,7 +15,7 @@ class PostAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         my_urls = [
-            path('sync', self.admin_site.admin_view(self.sync), name='instagram_sync')
+            re_path('^sync/?$', self.admin_site.admin_view(self.sync), name='instagram_sync')
         ]
         return my_urls + urls
 
