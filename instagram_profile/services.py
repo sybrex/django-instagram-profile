@@ -6,6 +6,7 @@ from django.conf import settings
 from . import client
 from .models import Post
 from requests.exceptions import HTTPError
+from django.core.files.base import ContentFile
 
 
 def sync_instagram(auth_code):
@@ -25,12 +26,13 @@ def sync_instagram(auth_code):
     created = get_last_synced_date()
     for post in posts:
         if created is None or post['created'] > created:
-            thumbnail = download_image(post['thumbnail'], post['media_id'])
-            if not thumbnail:
+
+            # Download the raw bytes of the image.  Abort if something goes wrong.
+            thumbnail_bytes = fetch_image(post['thumbnail'])
+            if not thumbnail_bytes:
                 continue
 
-            resize_image(thumbnail)
-
+            # Organise children
             children = []
             if post['type'] == Post.TYPE_ALBUM:
                 for item in post['children']:
@@ -38,15 +40,20 @@ def sync_instagram(auth_code):
                     resize_image(child_thumbnail)
                     children.append(child_thumbnail)
 
+            # Create post
             new_post = Post(
                 media_id=post['media_id'],
                 caption=post['caption'],
                 type=post['type'],
                 permalink=post['permalink'],
                 created=post['created'],
-                thumbnail=thumbnail,
-                children='\n'.join(children)
+                children='\n'.join(children),
             )
+
+            # Save the original thumbnail image into the model
+            # Can use libraries such as imagekit to resize this image when needed
+            name = get_file_name(post['thumbnail'], post['media_id'])
+            new_post.thumbnail.save(name, ContentFile(thumbnail_bytes))
             new_post.save()
 
     return {
@@ -63,11 +70,21 @@ def get_last_synced_date():
         pass
 
 
+def get_file_name(url, name):
+    ext = url.split('?')[0].split('.')[-1]
+    return name + '.' + ext
+
+
+def fetch_image(url):
+    r = requests.get(url, stream=True)
+    if r.status_code == 200:
+        return r.content
+
+
 def download_image(url, name):
     res = requests.get(url, stream=True)
     if res.status_code == 200:
-        ext = url.split('?')[0].split('.')[-1]
-        base_name = name + '.' + ext
+        base_name = get_file_name(url, name)
         full_name = os.path.join(settings.MEDIA_ROOT, 'instagram/', base_name)
         if not os.path.exists(full_name):
             with open(full_name, 'wb') as out_file:
