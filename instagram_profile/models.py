@@ -20,7 +20,7 @@ class Post(models.Model):
     type = models.CharField(max_length=20, choices=MEDIA_TYPES, default=TYPE_IMAGE)
     permalink = models.CharField(max_length=256)
     caption = models.TextField(default='')
-    thumbnail = models.CharField(max_length=256, default='')
+    thumbnail = models.ImageField(max_length=256, default='', upload_to='instagram/')
     children = models.TextField(default='')
     created = models.DateTimeField()
 
