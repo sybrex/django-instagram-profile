@@ -2,15 +2,20 @@ from django.contrib import admin
 from django.urls import reverse, re_path
 from django.http import HttpResponseRedirect
 from django.contrib import messages
+from django.utils.safestring import mark_safe
 from urllib.parse import urlencode
+
+
 from .models import Post
 from .services import sync_instagram
 from . import settings
 
 
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('media_id', 'created', 'caption', 'type', 'permalink')
-    ordering = ['created']
+    list_display = ('media_id', 'created', 'caption', 'type', 'permalink_display')
+    list_filter = ('type', 'created')
+    search_fields = ('media_id', 'caption')
+    date_hierarchy = 'created'
 
     def get_urls(self):
         urls = super().get_urls()
@@ -34,6 +39,14 @@ class PostAdmin(admin.ModelAdmin):
                 'response_type': 'code'
             }
             return HttpResponseRedirect(settings.INSTAGRAM_AUTH_URL + '?' + urlencode(query))
+
+    def permalink_display(self, obj):
+        if obj.permalink:
+            return mark_safe('<a href="{}" target="_blank">{}'.format(
+                obj.permalink,
+                obj.permalink.replace('https://www.instagram.com', '')
+            ))
+    permalink_display.short_description = 'Permalink'
 
 
 admin.site.register(Post, PostAdmin)
