@@ -13,7 +13,7 @@ else:
     _settings = settings.INSTAGRAM_PROFILE
 
 
-INSTAGRAM_ACCOUNT = _settings['account']
+INSTAGRAM_ACCOUNT = _settings.get('account', None)
 INSTAGRAM_AUTH_URL = _settings.get('auth_url', 'https://api.instagram.com/oauth/authorize')
 INSTAGRAM_ACCESS_TOKEN_URL = _settings.get('access_token_url', 'https://api.instagram.com/oauth/access_token')
 INSTAGRAM_LONG_LIVED_ACCESS_TOKEN_URL = _settings.get('long_lived_access_token_url', 'https://graph.instagram.com/access_token')
