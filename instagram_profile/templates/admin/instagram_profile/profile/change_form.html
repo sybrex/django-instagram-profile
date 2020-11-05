@@ -1,0 +1,10 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls %}
+
+{% block object-tools-items %}
+  {{ block.super }}
+  <li>
+      {% url 'admin:instagram_sync_profile' object_id as sync_url %}
+      <a href="{% add_preserved_filters sync_url is_popup to_field %}">Sync</a>
+  </li>
+{% endblock %}
