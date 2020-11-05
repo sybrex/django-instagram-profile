@@ -1,12 +1,21 @@
 import json
-import requests
+from datetime import datetime, timedelta
+from typing import Optional, NamedTuple
 from urllib.parse import urlencode
-from datetime import datetime
+
+import requests
+from django.utils import timezone
+
 from . import settings
 
 
-def get_media_feed(auth_code):
-    access_token = get_access_token(auth_code)
+class AccessTokenResult(NamedTuple):
+    access_token: Optional[str]
+    expires_at: Optional[datetime]
+    error: Optional[str]
+
+
+def get_media_feed(access_token):
     if not access_token:
         raise Exception('Invalid authentication code')
 
@@ -56,19 +65,51 @@ def get_auth_url():
     return url + '?' + urlencode(query)
 
 
-def get_access_token(auth_code):
-    url = settings.INSTAGRAM_ACCESS_TOKEN_URL
-    data = {
+def _parse_access_token_response(response: requests.Response, error_msg: str):
+    if response.status_code == 200:
+        j = json.loads(response.text)
+        expires_at = None
+        if 'expires_in' in j:
+            expires_at = timezone.now() + timedelta(seconds=j['expires_in'])
+        return AccessTokenResult(j['access_token'], expires_at, None)
+    return AccessTokenResult(None, None, f'{error_msg}: {response.text}')
+
+
+def get_short_lived_access_token(auth_code):
+    r = requests.post(settings.INSTAGRAM_ACCESS_TOKEN_URL, data={
         'app_id': settings.INSTAGRAM_APP_ID,
         'app_secret': settings.INSTAGRAM_SECRET,
         'grant_type': 'authorization_code',
         'redirect_uri': settings.INSTAGRAM_REDIRECT_URL,
         'code': auth_code
-    }
-    res = requests.post(url, data=data)
-    if res.status_code == 200:
-        data = json.loads(res.text)
-        return data['access_token']
+    })
+    return _parse_access_token_response(r, error_msg='Error retrieving short lived access token')
+
+
+def get_long_lived_access_token(short_lived_access_token):
+    r = requests.get('https://graph.instagram.com/access_token', params={
+        'client_secret': settings.INSTAGRAM_SECRET,
+        'grant_type': 'ig_exchange_token',
+        'access_token': short_lived_access_token,
+    })
+    return _parse_access_token_response(r, error_msg='Error retrieving long lived access token')
+
+
+def convert_auth_code_to_long_lived_token(auth_code: str):
+    short_lived = get_short_lived_access_token(auth_code)
+    if short_lived.access_token:
+        return get_long_lived_access_token(short_lived.access_token)
+    if short_lived.error:
+        return short_lived
+    return AccessTokenResult(None, None, 'Error converting auth code to long lived token' + str(short_lived))
+
+
+def refresh_long_lived_access_token(long_lived_access_token):
+    r = requests.get(settings.INSTAGRAM_REFRESH_ACCESS_TOKEN_URL, params={
+        'grant_type': 'ig_exchange_token',
+        'access_token': long_lived_access_token,
+    })
+    return _parse_access_token_response(r, error_msg='Error refreshing long lived access token')
 
 
 def convert_media(data):

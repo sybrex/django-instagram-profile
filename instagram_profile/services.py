@@ -1,17 +1,41 @@
 import os
-import requests
+from datetime import timedelta
 from shutil import copyfileobj
+
+import requests
 from PIL import Image
 from django.conf import settings
-from . import client
-from .models import Post
-from requests.exceptions import HTTPError
 from django.core.files.base import ContentFile
+from django.utils import timezone
+from requests.exceptions import HTTPError
+
+from . import client
+from .client import get_short_lived_access_token, get_long_lived_access_token
+from .models import Post, Profile
 
 
-def sync_instagram(auth_code):
+def sync_instagram(profile: Profile, auth_code: str=None):
+
+    # if we've got an auth_code, get an access token
+    if auth_code:
+
+        access_token, expires_at = get_short_lived_access_token(auth_code)
+        if access_token:
+            profile.access_token = access_token
+            profile.expires = expires_at
+            profile.save()
+
+    if profile.access_token:
+        if not profile.expires_at or timezone.now() - profile.expires_at < timedelta(days=30):
+
+            long_lived = get_long_lived_access_token(profile.access_token)
+            if long_lived.access_token:
+                profile.access_token = long_lived.access_token
+                profile.expires = long_lived.expires_at
+                profile.save()
+
     try:
-        posts = client.get_media_feed(auth_code)
+        posts = client.get_media_feed(profile.access_token)
     except HTTPError as http_err:
         return {
             'status': False,
