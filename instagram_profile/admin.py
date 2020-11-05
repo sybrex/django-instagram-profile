@@ -79,10 +79,14 @@ class PostAdmin(admin.ModelAdmin):
         return my_urls + urls
 
     def sync(self, request):
-        for profile in Profile.objects.exclude(access_token='').filter(expires_at__gte=timezone.now()):
-            result = sync_instagram(profile)
-            status = messages.SUCCESS if result['status'] else messages.ERROR
-            messages.add_message(request, status, result['message'])
+        for profile in Profile.objects.exclude(access_token=''):
+            if profile.expires_at > timezone.now():
+                result = sync_instagram(profile)
+                status = messages.SUCCESS if result['status'] else messages.ERROR
+                messages.add_message(request, status, result['message'])
+            else:
+                messages.warning(request, f'Authorization expired for {profile}.')
+
         return HttpResponseRedirect(reverse('admin:instagram_profile_post_changelist'))
 
     def permalink_display(self, obj):
