@@ -15,6 +15,17 @@ class AccessTokenResult(NamedTuple):
     error: Optional[str]
 
 
+def get_authorize_url(profile_pk: int):
+    query = {
+        'app_id': settings.INSTAGRAM_APP_ID,
+        'redirect_uri': settings.INSTAGRAM_REDIRECT_URL,
+        'scope': 'user_profile,user_media',
+        'response_type': 'code',
+        'state': profile_pk,  # Passing the profile id so that the callback knows which profile to use
+    }
+    return settings.INSTAGRAM_AUTH_URL + '?' + urlencode(query)
+
+
 def get_media_feed(access_token):
     if not access_token:
         raise Exception('Invalid authentication code')

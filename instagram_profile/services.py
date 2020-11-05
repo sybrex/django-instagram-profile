@@ -1,38 +1,20 @@
 import os
-from datetime import timedelta
 from shutil import copyfileobj
 
 import requests
 from PIL import Image
 from django.conf import settings
 from django.core.files.base import ContentFile
-from django.utils import timezone
 from requests.exceptions import HTTPError
 
 from . import client
-from .client import get_short_lived_access_token, get_long_lived_access_token
 from .models import Post, Profile
+from .profiles import update_access_token
 
 
-def sync_instagram(profile: Profile, auth_code: str=None):
-
-    # if we've got an auth_code, get an access token
-    if auth_code:
-
-        access_token, expires_at = get_short_lived_access_token(auth_code)
-        if access_token:
-            profile.access_token = access_token
-            profile.expires = expires_at
-            profile.save()
-
-    if profile.access_token:
-        if not profile.expires_at or timezone.now() - profile.expires_at < timedelta(days=30):
-
-            long_lived = get_long_lived_access_token(profile.access_token)
-            if long_lived.access_token:
-                profile.access_token = long_lived.access_token
-                profile.expires = long_lived.expires_at
-                profile.save()
+def sync_instagram(profile: Profile):
+    # Make sure the long lived token is not about to expire
+    update_access_token(profile)
 
     try:
         posts = client.get_media_feed(profile.access_token)
@@ -48,6 +30,7 @@ def sync_instagram(profile: Profile, auth_code: str=None):
         }
 
     created = get_last_synced_date()
+    count = 0
     for post in posts:
         if created is None or post['created'] > created:
 
@@ -79,10 +62,12 @@ def sync_instagram(profile: Profile, auth_code: str=None):
             name = get_file_name(post['thumbnail'], post['media_id'])
             new_post.thumbnail.save(name, ContentFile(thumbnail_bytes))
             new_post.save()
+            count += 1
 
     return {
         'status': True,
-        'message': 'Synced successfully'
+        'message': f'Successfully synced {count} new post{f"" if count == 1 else "s"} from {profile}.',
+        'count': count,
     }
 
 
