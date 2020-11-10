@@ -49,6 +49,7 @@ def sync_instagram(profile: Profile):
 
             # Create post
             new_post = Post(
+                profile=profile,
                 media_id=post['media_id'],
                 caption=post['caption'],
                 type=post['type'],
