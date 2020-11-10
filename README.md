@@ -8,7 +8,7 @@ A Django application that syncs one or more users Instagram posts to your projec
 - Button in Django Admin to authenticate user
 - Supports multiple Instagram accounts
 - Stores long-lived access code in database to allow on-going sync without user interaction 
-*(NB: This code is currently in proof-of-concept status.  Before using in production, update to encrypt this field or store it somewhere else that is encrypted.)*
+*(NB: This code is currently in proof-of-concept status.  Before using in production, you will probably want to update this field to be encrypted or stored somewhere else that is encrypted)*
 - Management command for background sync with crontab (`./manage.py sync_instagram_posts`)
  
 Instagram media is managed using Django admin console. [Demo](https://viktors.info/logbook)
