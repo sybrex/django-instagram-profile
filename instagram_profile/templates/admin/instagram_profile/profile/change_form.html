@@ -1,0 +1,14 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls %}
+
+{% block object-tools-items %}
+  {{ block.super }}
+  <li>
+      {% url 'admin:instagram_authorize' object_id as auth_url %}
+      <a href="{% add_preserved_filters auth_url is_popup to_field %}">Authorize</a>
+  </li>
+  <li>
+      {% url 'admin:instagram_sync' object_id as sync_url %}
+      <a href="{% add_preserved_filters sync_url is_popup to_field %}">Sync</a>
+  </li>
+{% endblock %}
