@@ -11,15 +11,9 @@ A Django application that syncs one or more users Instagram posts to your projec
 *(NB: This code is currently in proof-of-concept status.  Before using in production, you will probably want to update this field to be encrypted or stored somewhere else that is encrypted)*
 - Management command for background sync with crontab (`./manage.py sync_instagram_posts`)
  
-Instagram media is managed using Django admin console. [Demo](https://viktors.info/logbook)
-
-![Example](./docs/django-instagram-profile.png)
-
-*NB. This screenshot is now out-of-date*
+Instagram media is managed using Django admin console. [Demo django project](https://github.com/sybrex/django-instagram-demo)
 
 # Setup & configuration
-
-**NB.  This repository is a fork and has not yet been merged (if it will ever) into the original project.  Therefore the following install instructions will install the [original version](https://github.com/sybrex/django-instagram-profile).  If you want to use this fork, you will need to install from git.**
 
 ## 1. Install django-instagram-profile
 
@@ -36,8 +30,6 @@ pip install django-instagram-profile
 Dependencies will be installed automatically
  
 ## 2. Create a Facebook/Instagram App
-
-Sorry, this step is a bit complicated!
 
 Follow [this guide](https://developers.facebook.com/docs/instagram-basic-display-api/getting-started).
 
@@ -64,30 +56,16 @@ INSTAGRAM_PROFILE = {
     # You will get these from your registered instagram app
     'app_id': '123456789012345',
     'secret': '1234567890123456789012345678901234',
-    'redirect_url': 'https://www.example.com/your-admin/instagram_profile/profile/authorized/',
-    
-    # Account is now depreciated since multiple accounts can now be specified in the database
-    # If coming from an earlier version, leave this here as the migrations 
-    # will configure existing posts for this account
-    'account': 'instagram_account_name'
-    
-    # Optional: Override the default api settings (you probably won't need to do this)
-    'auth_url': 'https://api.instagram.com/oauth/authorize'
-    'access_token_url': 'https://api.instagram.com/oauth/access_token'
-    'media_url': 'https://graph.instagram.com'
+    'redirect_url': 'https://www.example.com/your-admin/instagram_profile/profile/authorized',        
 }
 ```
 
 **OR** if you prefer, create env.ini file inside your project directory with the following settings:
 ```ini
 [instagram]
-account = instagram_account_name
-auth_url = https://api.instagram.com/oauth/authorize
-access_token_url = https://api.instagram.com/oauth/access_token
 app_id = 123
 secret = abc
-redirect_url = https://mysite.com/admin/instagram_profile/post/sync
-media_url = https://graph.instagram.com
+redirect_url = https://www.example.com/your-admin/instagram_profile/profile/authorized
 ```
 
 ## 4. Migrate database
@@ -182,7 +160,7 @@ The long-term access codes will be automatically renewed if they will expire wit
 You can interface with the `Post` model however you like.  We recommend the excellent [django-imagekit](https://github.com/matthewwithanm/django-imagekit/) library, which will allow you to resize and change these images for however you like in your own code.
 
 # Releases
-* 1.0.0 (Not yet released) Multi-account, django.contrib.storage, background-sync, and much more
+* 1.0.0 Multi-account, django.contrib.storage, background-sync, and much more
 * 0.1.3 Use text field for instagram captions 
 * 0.1.1 Handling invalid auth code exception
 * 0.1.0 Alpha version
