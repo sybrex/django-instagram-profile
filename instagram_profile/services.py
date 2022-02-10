@@ -29,7 +29,7 @@ def sync_instagram(profile: Profile):
             'message': f'API error occurred: {err}'
         }
 
-    created = get_last_synced_date()
+    created = get_last_synced_date(profile)
     count = 0
     for post in posts:
         if created is None or post['created'] > created:
@@ -72,9 +72,9 @@ def sync_instagram(profile: Profile):
     }
 
 
-def get_last_synced_date():
+def get_last_synced_date(profile):
     try:
-        last_db_post = Post.objects.latest('created')
+        last_db_post = Post.objects.filter(profile=profile).latest('created')
         return last_db_post.created
     except Post.DoesNotExist:
         pass
