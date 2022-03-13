@@ -160,6 +160,7 @@ The long-term access codes will be automatically renewed if they will expire wit
 You can interface with the `Post` model however you like.  We recommend the excellent [django-imagekit](https://github.com/matthewwithanm/django-imagekit/) library, which will allow you to resize and change these images for however you like in your own code.
 
 # Releases
+* 1.0.1 Merged pull requests #12, #13, #14, #15, 16
 * 1.0.0 Multi-account, django.contrib.storage, background-sync, and much more
 * 0.1.3 Use text field for instagram captions 
 * 0.1.1 Handling invalid auth code exception
