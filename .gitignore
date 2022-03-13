@@ -3,6 +3,8 @@
 
 *.pyc
 
+.python-version
+
 dist
 build
 django_instagram_profile.egg-info
