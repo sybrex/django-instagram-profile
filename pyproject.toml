@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "django-instagram-profile"
-version = "1.0.0"
+version = "1.0.3"
 description = "Django package to sync and display personal Instagram media"
 authors = ["Viktor <vsybrex@gmail.com>", "Humphrey <humphrey@datalive.com.au>"]
 license = "BSD-3-Clause"
