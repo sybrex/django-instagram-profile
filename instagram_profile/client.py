@@ -121,7 +121,7 @@ def convert_auth_code_to_long_lived_token(auth_code: str):
 
 def refresh_long_lived_access_token(long_lived_access_token):
     r = requests.get(settings.INSTAGRAM_REFRESH_ACCESS_TOKEN_URL, params={
-        'grant_type': 'ig_exchange_token',
+        'grant_type': 'ig_refresh_token',
         'access_token': long_lived_access_token,
     })
     return _parse_access_token_response(r, error_msg='Error refreshing long lived access token')
